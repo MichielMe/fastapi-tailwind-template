@@ -1,0 +1,60 @@
+@import "tailwindcss";
+@import url("https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap");
+@plugin "daisyui";
+@plugin "daisyui/theme" {
+  name: "broadcast-pro";
+  default: true;
+  prefersdark: true;
+  color-scheme: dark;
+
+  /* Exact dark backgrounds from screenshot */
+  --color-base-100: #1a1a1a; /* Main dark background */
+  --color-base-200: #2a2a2a; /* Slightly lighter panels */
+  --color-base-300: #3a3a3a; /* Elevated elements */
+  --color-base-content: #ffffff; /* Pure white text */
+
+  /* Bright electric blue - like the active selection */
+  --color-primary: #00a8e8;
+  --color-primary-content: #ffffff;
+
+  /* Muted blue-gray secondary */
+  --color-secondary: #4a5568;
+  --color-secondary-content: #ffffff;
+
+  /* Bright accent - electric blue variant */
+  --color-accent: #00d4ff;
+  --color-accent-content: #000000;
+
+  /* Neutral - dark gray */
+  --color-neutral: #2d3748;
+  --color-neutral-content: #ffffff;
+
+  /* Exact status colors from screenshot */
+  --color-info: #00a8e8; /* Bright cyan/blue */
+  --color-info-content: #ffffff;
+  --color-success: #00ff88; /* Bright green for "Ready" */
+  --color-success-content: #000000;
+  --color-warning: #ffa500; /* Orange for warnings */
+  --color-warning-content: #000000;
+  --color-error: #ff4444; /* Bright red for "ON AIR" */
+  --color-error-content: #ffffff;
+
+  /* Sharp, minimal radius for technical look */
+  --radius-selector: 0.125rem;
+  --radius-field: 0.125rem;
+  --radius-box: 0.125rem;
+
+  /* Compact sizing for professional interface */
+  --size-selector: 0.2rem;
+  --size-field: 0.15rem;
+
+  /* Sharp borders */
+  --border: 1px;
+
+  /* No depth/shadows for flat technical look */
+  --depth: 0;
+  --noise: 0;
+}
+@theme {
+  --font-body: "PT Sans", sans-serif;
+}
