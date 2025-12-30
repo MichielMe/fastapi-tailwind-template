@@ -12,16 +12,23 @@ A modern, production-ready template for building web applications with FastAPI b
 - **Docker Support**: Containerized deployment with multi-stage builds
 - **uv Package Manager**: Fast Python package management
 - **Modular Architecture**: Clean separation of concerns with organized project structure
+- **Observability**: Prometheus metrics with Grafana dashboards for monitoring
+- **Background Tasks**: Celery with Redis broker for asynchronous task processing
+- **Testing**: Pytest framework for backend testing
 
 ## 📁 Project Structure
 
 ```
 ├── app/                    # FastAPI application
 │   ├── api/               # API routes
+│   │   └── tasks.py       # Task trigger endpoints
 │   ├── core/              # Core configuration and settings
+│   │   └── celery_app.py  # Celery configuration
 │   ├── models/            # Database models
 │   ├── schemas/           # Pydantic schemas
 │   ├── services/          # Business logic
+│   ├── tasks/             # Celery background tasks
+│   │   └── example.py     # Example task
 │   ├── views/             # Frontend view controllers
 │   └── main.py            # FastAPI app entry point
 ├── frontend/              # Frontend assets and templates
@@ -33,6 +40,10 @@ A modern, production-ready template for building web applications with FastAPI b
 │       ├── components/    # Reusable components
 │       ├── pages/         # Page templates
 │       └── base.html      # Base template
+├── monitoring/            # Observability configuration
+│   ├── prometheus/        # Prometheus scrape configs
+│   └── grafana/           # Grafana provisioning (datasources & dashboards)
+├── tests/                 # Pytest test files
 ├── docker-compose.yml     # Docker Compose configuration
 ├── Dockerfile            # Docker image configuration
 ├── pyproject.toml        # Python project configuration
@@ -167,6 +178,9 @@ make down-docker
 
 # Clean cache files
 make clean
+
+# Run tests
+make test
 ```
 
 ### Frontend Commands
@@ -177,6 +191,114 @@ npm run dev
 
 # Build for production
 npm run build
+```
+
+## 📊 Observability
+
+The project includes Prometheus and Grafana for monitoring:
+
+### Launch the Full Stack
+
+```bash
+docker compose up --build
+```
+
+This starts:
+- **FastAPI App**: `http://localhost:8000`
+- **Prometheus**: `http://localhost:9090`
+- **Grafana**: `http://localhost:3000` (default login: admin/admin)
+- **Redis**: `localhost:6379`
+- **Celery Worker**: Background task processor
+
+### Metrics Endpoint
+
+The FastAPI app exposes Prometheus metrics at `/metrics`.
+
+### Grafana Dashboard
+
+A pre-configured FastAPI dashboard is automatically provisioned showing:
+- Request rate
+- Request duration (p50, p95)
+- Error rates (4xx, 5xx)
+- Status code distribution
+
+## ⚡ Background Tasks
+
+The project uses Celery with Redis for asynchronous task processing.
+
+### Triggering a Background Task
+
+```bash
+# Using curl
+curl -X POST http://localhost:8000/api/trigger-task
+
+# Response
+{"message": "Task triggered", "task_id": "abc123..."}
+```
+
+### Creating New Tasks
+
+1. Create a new task in `app/tasks/`:
+
+```python
+# app/tasks/my_task.py
+from app.core.celery_app import celery_app
+
+@celery_app.task
+def my_task(param: str) -> str:
+    # Task logic here
+    return f"Completed: {param}"
+```
+
+2. Add the module to `celery_app.py`:
+
+```python
+celery_app = Celery(
+    "tasks",
+    broker="redis://redis:6379/0",
+    backend="redis://redis:6379/0",
+    include=["app.tasks.example", "app.tasks.my_task"]  # Add here
+)
+```
+
+3. Create an endpoint to trigger it in `app/api/tasks.py`.
+
+## 🧪 Testing
+
+The project uses Pytest for testing.
+
+### Running Tests
+
+```bash
+# Using make
+make test
+
+# Or directly with uv
+uv run pytest
+
+# With verbose output
+uv run pytest -v
+
+# Run specific test file
+uv run pytest tests/test_main.py
+```
+
+### Test Structure
+
+```
+tests/
+├── conftest.py    # Shared fixtures (TestClient)
+└── test_main.py   # Main endpoint tests
+```
+
+### Writing Tests
+
+```python
+# tests/test_example.py
+def test_example(client):
+    response = client.get("/")
+    assert response.status_code == 200
+    assert "message" in response.json()
 ```
 
 ## 🐳 Docker Deployment
